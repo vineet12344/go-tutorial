@@ -1,4 +1,5 @@
 package main
+
 import "fmt"
 
 func main() {
@@ -16,7 +17,11 @@ func main() {
 	// fmt.Println("Value of ptr is : ", ptr)
 	// fmt.Println("Value of ptr is : ", *ptr)
 
-	p("Value of ptr is : ", ptr)
-	p("Value of ptr is : ", *ptr)
+	// p("Value of ptr is : ", ptr)
+	// p("Value of ptr is : ", *ptr)
+
+	*ptr = *ptr * 10
+	p(*ptr)
+	p(ptr)
 
 }
