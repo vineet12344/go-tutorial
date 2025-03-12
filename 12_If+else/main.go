@@ -34,8 +34,5 @@ func main() {
 
 	// }
 
-	if error {
-		
-	}
 
 }
