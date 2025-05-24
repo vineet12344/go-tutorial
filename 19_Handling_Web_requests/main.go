@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -20,7 +20,7 @@ func main() {
 	fmt.Printf("Response is of Type: %T \n", response)
 	defer response.Body.Close() // Callers Responsiblity !! :)
 
-	databytes, err := ioutil.ReadAll(response.Body)
+	databytes, err := io.ReadAll(response.Body)
 	checkError(err)
 
 	println("Data from API : ", string(databytes))
