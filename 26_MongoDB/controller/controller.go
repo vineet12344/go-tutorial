@@ -2,10 +2,13 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	model "mongodbTutorial/models"
+	"net/http"
 
+	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -79,7 +82,7 @@ func deleteOneMovie(MovieID string) {
 
 }
 
-func deleteManyMovies(movieID string) {
+func deleteAllMovies(movieID string) {
 
 	result, err := collection.DeleteMany(context.Background(), bson.D{}, nil)
 	if err != nil {
@@ -90,7 +93,7 @@ func deleteManyMovies(movieID string) {
 
 }
 
-func findAllMovies() []primitive.M {
+func getAllMovies() []primitive.M {
 	cursor, err := collection.Find(context.Background(), bson.D{}, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -111,4 +114,58 @@ func findAllMovies() []primitive.M {
 
 	fmt.Println(movies)
 	return movies
+}
+
+// Actual Controllers - f
+func GetAllMovies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencode")
+	allMovies := getAllMovies()
+	json.NewEncoder(w).Encode(allMovies)
+}
+
+func CreateMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencode")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+
+	var movie model.Netflix
+	_ = json.NewDecoder(r.Body).Decode(&movie)
+	insertOneMovie(movie)
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(movie)
+
+}
+
+func MarkAsWatched(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencode")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+
+	params := mux.Vars(r)
+	updateOneMovie(params["id"])
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(params["id"])
+
+}
+
+func DeleteOneMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencode")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
+
+	params := mux.Vars(r)
+
+	deleteOneMovie(params["id"])
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(params["id"])
+
+}
+
+func DeleteAllMovies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencode")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
+
+	params := mux.Vars(r)
+
+	deleteAllMovies(params["id"])
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(params["id"])
+
 }
